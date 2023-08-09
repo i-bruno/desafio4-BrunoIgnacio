@@ -1,10 +1,14 @@
 <h1>Lista de libros</h1>
 
-{{#each producto}}
+{{#each listaProductos}}
     <h2>{{this.title}}</h2>
 
     <p>{{this.description}}</p>
 
     <p>{{this.price}}</p>
+    <hr>
 {{/each}}
-<hr>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
