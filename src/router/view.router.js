@@ -1,18 +1,19 @@
-import { Router } from "express";
-import ProductManager from "../controllers/ProductManager.js";
-import __dirname from "../utils.js";
+import {Router} from  "express"
+import ProductManager from "../controllers/productManager.js"
+import { __dirname } from '../utils.js'
 
-const pmanager = new ProductManager(__dirname+"/models/products.json");
+const pmanager=new ProductManager(__dirname+'/models/products.json')
 
-const router = Router();
+const router=Router()
 
-router.get("/", async (req, res)=>{
-    const listaProductos = await pmanager.getProducts({});
-    res.render("home", {listaProductos});
+router.get("/",async(req,res)=>{
+  const listaproductos=await pmanager.getProducts({})
+  res.render("home",{listaproductos})
 })
 
-router.get("/realtimeproducts", async (req, res)=>{
-    res.render("realTimeProducts");
+router.get("/realtimeproducts",async(req,res)=>{
+  res.render("realTimeProducts")
 })
 
-export default router;
+export default router
+

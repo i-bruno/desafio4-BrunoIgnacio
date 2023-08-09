@@ -1,65 +1,56 @@
-import express from 'express';
-import ProductRouter from "./router/product.js"
-import CartRouter from "./router/carts.js"
-import { engine } from 'express-handlebars';
-import * as path from "path";
-import __dirname from "./utils.js";
-import ProductManager from './controllers/ProductManager.js';
-import viewRouter from './router/view.router.js';
-import {Server} from 'socket.io';
-import handlebars from "express-handlebars";
+import express from "express"
+import { __dirname } from "./utils.js"
+import handlebars from "express-handlebars"
+import { Server } from "socket.io"
+import viewRouter from "./router/view.router.js"
+import productRouter from "./router/product.js"
+import cartRouter from "./router/carts.js"
+import ProductManager from "./controllers/productManager.js"
 
-
-const app = express();
+const app = express()
 const PORT = 8080;
-const product = new ProductManager();
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static(__dirname + "/public"))
 
-app.use("/api/cart", CartRouter);
-app.use("/api/products", ProductRouter);
-app.use("/", viewRouter);
+//handlebars
+app.engine("handlebars", handlebars.engine())
+app.set("views", __dirname + "/views")
+app.set("view engine", "handlebars")
 
-//Handlebars
-app.engine("handlebars", handlebars.engine());
-app.set("view engine", "handlebars");
-app.set("views", path.resolve(__dirname + "/views"));
+//rutas
+app.use("/api", productRouter)
+app.use("/api", cartRouter)
+app.use("/", viewRouter)
 
-//static
 
-app.use("/", express.static(__dirname + "/public"))
-
-app.get("/", async (req, res)=>{
-    let allProducts = await product.getProducts();
-    res.render("home", {
-        title: "Handlebars",
-        producto : allProducts
-    })
+const httpServer = app.listen(PORT, () => {
+  console.log(`Servidor express en puerto ${PORT}`)
 })
 
-app.get("/:id", async (req, res)=>{
-    let prod = await product.getProductsById(req.params.id);
-    res.render("prod", {
-        title: "Handlebars",
-        producto : prod
-    })
-})
+const pmanager = new ProductManager(__dirname + "/models/products.json")
+const socketServer = new Server(httpServer)
 
-const httpServer = app.listen(PORT, ()=>{
-    console.log(`Servidor express en puerto ${PORT}`);
-})
+socketServer.on("connection", async (socket) => {
+  console.log("cliente conectado con id:", socket.id)
+  const products = await pmanager.getProducts({});
+  socket.emit('productos', products);
 
-app.use('/', viewRouter);
+  socket.on('addProduct', async data => {
+    await pmanager.addProduct(data);
+    const updatedProducts = await pmanager.getProducts({}); // Obtener la lista actualizada de productos
+    socket.emit('productosupdated', updatedProducts);
+  });
 
-const socketServer = new Server(httpServer);
+  socket.on("deleteProduct", async (id) => {
+    console.log("ID del producto a eliminar:", id);
+    const deleteProduct = await pmanager.deleteProduct(id);
+    const updatedProducts = await pmanager.getProducts({});
+    socketServer.emit("productosupdated", updatedProducts);
+  });
 
-const pmanagerSocket = new ProductManager(__dirname+"/models/products.json")
 
-socketServer.on('connection', async (socket)=>{
-    console.log("Nuevo cliente conectado", socket.id)
 
-    const listadeproductos = await pmanagerSocket.getProducts({});
-    socket.emit("enviodeproducts", listadeproductos)
 
 })

@@ -1,32 +1,39 @@
-import { Router } from "express";
-import ProductManager from '../controllers/ProductManager.js';
+import { Router } from "express"
+import ProductManager from "../controllers/productManager.js"
+import { __dirname } from "../utils.js"
 
-const ProductRouter = Router();
-const product = new ProductManager();
+const manager = new ProductManager(__dirname + '/models/products.json')
+const router = Router()
 
-ProductRouter.get("/", async (req, res)=>{
-    res.send(await product.getProducts());
+router.get("/products", async (req, res) => {
+  const products = await manager.getProducts(req.query)
+  res.json({ products })
 })
 
-ProductRouter.get("/:id"), async(req, res)=>{
-    let id = req.params.id;
-    res.send(await product.getProductsById(id));
-}
 
-ProductRouter.post("/", async (req, res)=>{
-    let newProduct = req.body;
-    res.send(await product.addProducts(newProduct));
+
+router.get("/products/:pid", async (req, res) => {
+  const productfind = await manager.getProductbyId(req.params);
+  res.json({ status: "success", productfind });
 });
 
-ProductRouter.put("/:id", async (req, res)=>{
-    let id = req.params.id;
-    let updateProducts = req.body;
-    res.send(await product.updateProducts(id, updateProducts));
-})
+router.post("/products", async (req, res) => {
+  const newproduct = await manager.addProduct(req.body);
+  res.json({ status: "success", newproduct });
+});
 
-ProductRouter.delete("/:id", async (req, res)=>{
-    let id = req.params.id;
-    res.send(await product.deleteProducts(id));
-})
+router.put("/products/:pid", async (req, res) => {
+  const updatedproduct = await manager.updateProduct(req.params, req.body);
+  res.json({ status: "success", updatedproduct });
+});
 
-export default ProductRouter
+
+router.delete("/products/:pid", async (req, res) => {
+  const id = parseInt(req.params.pid)
+  const deleteproduct = await manager.deleteProduct(id);
+  res.json({ status: "success", deleteproduct });
+});
+
+
+
+export default router

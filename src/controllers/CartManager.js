@@ -1,66 +1,92 @@
-import {promises as fs} from 'fs';
-import {nanoid} from 'nanoid';
-import ProductManager from "./ProductManager.js"
-import { createBrotliCompress } from 'zlib';
+import fs from "fs"
 
-const productAll = new ProductManager;
-
-class CartManager {
-    constructor() {
-        this.path = "./src/models/carts.json"
+export default class CartManager {
+  constructor(path) {
+    this.path = path,
+      this.carts = [
+      ]
+  }
+  //READ
+  getCarts = async () => {
+    if (fs.existsSync(this.path)) {
+      const cartlist = await fs.promises.readFile(this.path, "utf-8")
+      const cartlistparse = JSON.parse(cartlist)
+      return cartlistparse
+    }
+    else {
+      return []
     }
 
-    exist = async (id) =>{
-        let carts = await this.readCarts();
-        return carts.find(prod => prod.id === id);
-    }
+  }
 
-    readCarts = async () =>{
-        let carts = await fs.readFile(this.path, "utf-8");
-        return JSON.parse(carts);
-    }
 
-    writeCarts = async (cart)=>{
-        await fs.writeFile(this.path, JSON.stringify(cart));
-    }
+  getCartbyId = async (id) => {
 
-    addCart = async () =>{
-        let cartsOld = await this.readCarts();
-        let id = nanoid();
-        let cartsConcat = [{id : id, carts : []}, ...cartsOld]
-        await this.writeCarts(cartsConcat);
-        return "Se agregó el carrito"
-    }
-
-    getCartsById = async (id)=>{
-        let cartsById = await this.exist(id);
-        if(!cartsById) return "Carrito no encontrado"
-        return cartsById;
-    }
-
-    addProductInCart = async (cartId, productId) => {
-        let cartsById = await this.exist(cartId);
-        if(!cartsById) return "Carrito no encontrado"
-        let productById = await productAll.exist(productId);
-        if(!cartsById) return "Producto no encontrado"
-
-        let cartsAll = await this.readCarts();
-        let cartFilter = cartsAll.filter(cart => cart.id != cartId)
-
-        if (cartsById.products.some(prod => prod.id === productId)){
-            let productInCart = cartsById.products.find(prod => prod.id === productId)
-            productInCart.cantidad++
-            let cartsConcat = [productInCart, ...cartFilter]
-            await this.writeCarts(cartConcat);
-            return "Producto sumado al carrito";
+    try {
+      const { cid } = id
+      if (fs.existsSync(this.path)) {
+        const allcarts = await this.getCarts()
+        const found = allcarts.find(element => element.id === parseInt(cid))
+        if (found) {
+          return found;
+        } else {
+          return ("cart no existe");
         }
-        
-
-
-        let cartConcat = [{id:cartId, products: [{productById, cantidad: 1}]}, ...cartFilter]
-        await this.writeCarts(cartConcat);
-        return "Producto agregado al carrito";
+      } else {
+        return ("cart file json  not found");
+      }
+    } catch (error) {
+      return (error);
     }
-}
+  }
+  //GENERATE ID 
+  generatecartId = async () => {
+    try {
+      if (fs.existsSync(this.path)) {
+        const cartlist = await fs.promises.readFile(this.path, "utf-8");
+        const cartlistJs = JSON.parse(cartlist);
+        const counter = cartlistJs.length;
+        if (counter == 0) {
+          return 1;
+        } else {
+          return cartlistJs[counter - 1].id + 1;
+        }
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  addCart = async () => {
+    const listaCarts = await this.getCarts();
+    const id = await this.generatecartId();
+    const cartNew = {
+      id,
+      products: []
+    };
+    listaCarts.push(cartNew);
+    await fs.promises.writeFile(this.path, JSON.stringify(listaCarts, null, 2));
+  }
 
-export default CartManager
+
+  addProductToCart = async (cid, pid) => {
+    const listaCarts = await this.getCarts();
+    const cart = listaCarts.find(e => e.id === cid);
+    const productIndex = cart.products.findIndex(p => p.pid === pid);
+
+    if (productIndex !== -1) {
+      // Si el producto ya existe en el carrito, incrementar la cantidad
+      cart.products[productIndex].quantity++;
+    } else {
+      // Si el producto no existe en el carrito, agregarlo como un nuevo objeto
+      cart.products.push({
+        pid,
+        quantity: 1
+      });
+    }
+
+    await fs.promises.writeFile(this.path, JSON.stringify(listaCarts, null, 2));
+  }
+
+
+
+}
