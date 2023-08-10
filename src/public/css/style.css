@@ -6,7 +6,7 @@
 }
 
 body {
-  background: #161623;
+  background:white;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -26,25 +26,14 @@ body {
   margin: 0.5rem;
 }
 .container .card {
-  background: #232323;
+  background: #263d54;
   width: 320px;
   height: 250px;
   position: relative;
   border-radius: 20px;
   overflow: hidden;
 }
-/* .container .card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #B6FCFD;
-  -webkit-clip-path: circle(150px at 80% 20%);
-          clip-path: circle(150px at 80% 20%);
-  transition: 0.5s ease-in-out;
-} */
+
 .container .card:hover .imgBx {
   top: 0;
   transform: translateY(0);
@@ -71,33 +60,7 @@ body {
   -webkit-clip-path: circle(300px at 80% -20%);
           clip-path: circle(300px at 80% -20%);
 }
-/* .container .card:after {
-  content: "Nike";
-  position: absolute;
-  top: 30%;
-  left: -20%;
-  font-size: 12em;
-  color: rgba(255, 255, 255, 0.02);
-  font-weight: 800;
-  font-style: italic;
-  z-index: 1;
-} */
-/* .container .card .imgBx {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  height: 220px;
-  z-index: 1000;
-  transition: 0.5s;
-  transform: translateY(-50%);
-} */
-/* .container .card .imgBx img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 340px;
-  transform: translate(-50%, -50%) rotate(-10deg);
-} */
+
 .container .card .contentBx {
   position: absolute;
   bottom: 0;
@@ -144,46 +107,24 @@ body {
   transition: 0.5s;
   cursor: pointer;
 }
-/* .container .card .contentBx .size span:hover {
-  color: #111;
-  background: #dc7928;
-} */
-/* .container .card .contentBx .color span {
-  width: 20px;
-  height: 20px;
-  background: #f00;
-  border-radius: 50%;
-  margin: 0 5px;
-  cursor: pointer;
-} */
-/* .container .card .contentBx .color span:nth-child(2) {
-  background: #9bdc28;
-}
-.container .card .contentBx .color span:nth-child(3) {
-  background: #03a9f4;
-}
-.container .card .contentBx .color span:nth-child(4) {
-  background: #e91e63;
-} */
+
 .container .card .contentBx a {
   display: inline-block;
   padding: 10px 30px;
-  background: #B6FCFD;
+  background: #bf1b27;
   border-radius: 4px;
   margin-top: 10px;
   text-decoration: none;
   font-weight: 600;
-  color: #131313;
+  color: white;
   transform: translateY(50px);
   transition: 0.5s;
   opacity: 0;
 }
 
-
-
 #formProduct {
   width: 400px;
-  background: #24303c;
+  background: #263d54;
   padding: 30px;
   margin: auto;
   margin-top: 100px;
@@ -201,14 +142,14 @@ body {
 
 .controls {
   width: 100%;
-  background: #24303c;
+  background: white;
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 16px;
-  border: 1px solid #c51f1f;
+  border: 1px solid #bf1b27;
   font-family: 'calibri';
   font-size: 18px;
-  color: white;
+  color:black;
 }
 
 #formProduct p {
@@ -236,10 +177,14 @@ body {
 
 #formProduct .botons {
   width: 100%;
-  background: #c51f1f;
+  background: #bf1b27;
   border: none;
   padding: 12px;
   color: white;
   margin: 16px 0;
   font-size: 16px;
+}
+
+#formProduct .botons:hover{
+  cursor:pointer;
 }

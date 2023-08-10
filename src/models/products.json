@@ -36,5 +36,12 @@
     "description": "Novela",
     "price": "4500",
     "code": "2"
+  },
+  {
+    "id": "1oJLDGVN0axb8q6socL_d111",
+    "title": "La soledad de los moribundos - Norbert Elias",
+    "description": "Ensayo",
+    "price": "4300",
+    "code": "3"
   }
 ]
